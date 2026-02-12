@@ -158,7 +158,7 @@ def get_indicators(
         "NAS": mospi.get_nas_indicators,
         "ENERGY": mospi.get_energy_indicators,
         # Special datasets - return guidance instead of indicators
-        "CPI": lambda: {"message": "CPI uses levels (Group/Item) instead of indicators. Call 3_get_metadata with base_year and level params.", "dataset": "CPI"},
+        "CPI": mospi.get_cpi_base_years,
         "IIP": lambda: {"message": "IIP uses categories instead of indicators. Call 3_get_metadata with base_year and frequency params.", "dataset": "IIP"},
         "WPI": lambda: {"message": "WPI uses hierarchical commodity codes. Call 3_get_metadata to see available groups/items.", "dataset": "WPI"},
         "ASI": mospi.get_asi_indicators,
@@ -221,11 +221,11 @@ def get_metadata(
                         2=Quarterly bulletin (different indicator set).
                         3=Monthly bulletin (2025+ only).
                         MUST NOT use 2 for quarterly data. Use 1 + quarter_code in 4_get_data().
-        base_year: REQUIRED for CPI ("2012"/"2010"), IIP ("2011-12"/"2004-05"/"1993-94"). MUST NOT pass for PLFS, ASI, WPI.
+        base_year: REQUIRED for CPI ("2024"/"2012"/"2010"), IIP ("2011-12"/"2004-05"/"1993-94"). MUST NOT pass for PLFS, ASI, WPI.
         level: REQUIRED for CPI ("Group"/"Item"). MUST NOT pass for other datasets.
         frequency: REQUIRED for IIP ("Annually"/"Monthly"). MUST NOT pass for other datasets.
         classification_year: REQUIRED for ASI ("2008"/"2004"/"1998"/"1987"). MUST NOT pass for other datasets.
-        series: For NAS only ("Current"/"Back"). MUST NOT pass for other datasets.
+        series: For CPI and NAS only ("Current"/"Back"). MUST NOT pass for other datasets.
         use_of_energy_balance_code: For ENERGY only (1=Supply, 2=Consumption). MUST NOT pass for other datasets.
     """
     dataset = dataset.upper()
@@ -235,9 +235,18 @@ def get_metadata(
 
         if dataset == "CPI":
             swagger_key = "CPI_ITEM" if (level or "Group") == "Item" else "CPI_GROUP"
-            result = mospi.get_cpi_filters(base_year=base_year or "2012", level=level or "Group")
+            result = mospi.get_cpi_filters(
+                base_year=base_year or "2024",
+                level=level or "Group",
+                series_code=series or "Current"
+            )
             result["api_params"] = get_swagger_param_definitions(swagger_key)
             result["_next_step"] = _next
+            result["_retry_hint"] = (
+                f"If requested item/year not found in base_year='{base_year or '2024'}', "
+                "try OTHER base years ('2024', '2012', '2010') before concluding data unavailable. "
+                "Different base years have different item structures and time coverage."
+            )
             return result
 
         elif dataset == "IIP":
@@ -428,7 +437,7 @@ def know_about_mospi_api() -> Dict[str, Any]:
             },
             "CPI": {
                 "name": "Consumer Price Index",
-                "description": "Hierarchical commodity structure (Groups and Items) with base years 2010/2012. Tracks consumer inflation across 600+ items organized into food, fuel, housing, clothing, and miscellaneous categories. Supports state-level analysis at group level and All-India analysis at item level.",
+                "description": "Hierarchical commodity structure (Groups and Items) with base years 2010/2012/2024. Tracks consumer inflation across 600+ items organized into food, fuel, housing, clothing, and miscellaneous categories. Supports state-level analysis at group level and All-India analysis at item level.",
                 "use_for": "Retail inflation, price indices, cost of living, commodity price trends"
             },
             "IIP": {
