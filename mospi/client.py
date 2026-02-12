@@ -30,15 +30,18 @@ class MoSPI:
         """
         Fetches data from a specified MoSPI dataset.
         """
-        endpoint_path = self.api_endpoints.get(dataset_name)
-        if not endpoint_path:
-            return {"error": f"Dataset '{dataset_name}' not found."}
-
-        full_url = f"{self.base_url}{endpoint_path}"
-
         # Clean up params - remove None values
         if params:
             params = {k: v for k, v in params.items() if v is not None}
+
+        # Special handling for CPI with base_year 2024 (unified endpoint)
+        if dataset_name in ["CPI_Group", "CPI_Item"] and params and params.get("base_year") == "2024":
+            full_url = f"{self.base_url}/api/cpi/getCPIData"
+        else:
+            endpoint_path = self.api_endpoints.get(dataset_name)
+            if not endpoint_path:
+                return {"error": f"Dataset '{dataset_name}' not found."}
+            full_url = f"{self.base_url}{endpoint_path}"
 
         try:
             response = requests.get(full_url, params=params, timeout=30)
@@ -113,18 +116,21 @@ class MoSPI:
 
     def get_cpi_filters(
         self,
-        base_year: str = "2012",
-        level: str = "Group"
+        base_year: str = "2024",
+        level: str = "Group",
+        series_code: str = "Current"
     ) -> Dict[str, Any]:
         """Fetch available CPI filters for given base year and level.
 
         Args:
-            base_year: "2012" or "2010"
-            level: "Group" or "Item"
+            base_year: "2012", "2010", or "2024"
+            level: "Group" or "Item" (can be "null" for base_year 2024)
+            series_code: "Current" or "Back" (for base_year 2024)
         """
         params = {
             "base_year": base_year,
-            "level": level,
+            "level": level if level else "null",
+            "series_code": series_code,
         }
 
         try:
@@ -135,6 +141,32 @@ class MoSPI:
             )
             response.raise_for_status()
             return response.json()
+        except requests.RequestException as e:
+            return {"error": str(e), "statusCode": False}
+
+    def get_cpi_base_years(self) -> Dict[str, Any]:
+        """Fetch available CPI base years and levels.
+
+        Returns:
+            Dictionary with available base_year and level options
+        """
+        try:
+            response = requests.get(
+                f"{self.base_url}/api/cpi/getCpiBaseYear",
+                timeout=30
+            )
+            response.raise_for_status()
+            result = response.json()
+
+            # Add guidance about base years
+            result["_note"] = (
+                "CPI has multiple base years with different data coverage. "
+                "DEFAULT to latest base_year (2024) for recent data unless user specifies otherwise. "
+                "base_year='2024': Latest data (2026+), new hierarchical structure (division/class/sub_class). "
+                "base_year='2012': Data up to 2025. base_year='2010': Historical data. "
+                "If data not found in default base year, try others before concluding unavailable."
+            )
+            return result
         except requests.RequestException as e:
             return {"error": str(e), "statusCode": False}
 
