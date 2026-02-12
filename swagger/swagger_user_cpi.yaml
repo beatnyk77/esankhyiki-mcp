@@ -25,6 +25,15 @@ paths:
           enum:
           - "2012"
           - "2010"
+          - "2024"
+      - name: series
+        required: true
+        in: query
+        schema:
+          default: Current
+          enum:
+          - Current
+          - Back
       - name: year
         in: query
         description: Enter the Year (format YYYY.Comma separated for multiple values)
@@ -40,6 +49,42 @@ paths:
         description: Enter the Item code
         schema:
           type: string
+      - name: state_code
+        in: query
+        description: Enter the State code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: sector_code
+        in: query
+        description: Enter the Sector code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: division_code
+        in: query
+        description: Enter the Division code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: class_code
+        in: query
+        description: Enter the Class code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: sub_class_code
+        in: query
+        description: Enter the Sub-class code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: imputation_code
+        in: query
+        description: Enter the Imputation code (Y/N for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^[YN](,[YN])*$
       - name: limit
         in: query
         description: Number of records per page (default 10)
@@ -116,6 +161,7 @@ paths:
           enum:
           - "2012"
           - "2010"
+          - "2024"
       - name: series
         required: true
         in: query
@@ -154,6 +200,30 @@ paths:
         description: Enter the Sector code (from 1-3.Comma separated for multiple values)
         schema:
           type: string
+      - name: division_code
+        in: query
+        description: Enter the Division code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: class_code
+        in: query
+        description: Enter the Class code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: sub_class_code
+        in: query
+        description: Enter the Sub-class code (for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^\d+(,\d+)*$
+      - name: imputation_code
+        in: query
+        description: Enter the Imputation code (Y/N for base_year 2024. Comma separated for multiple values)
+        schema:
+          type: string
+          pattern: ^[YN](,[YN])*$
       - name: limit
         in: query
         description: Number of records per page (default 10)
