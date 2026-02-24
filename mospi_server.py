@@ -210,7 +210,7 @@ def get_metadata(
     Returns all valid filter values (states, years, quarters, etc.) to use in 4_get_data().
 
     MUST NOT pass params that don't belong to this function.
-    "Format" and "series" are NOT valid here (Format is for 4_get_data only, series is for NAS only).
+    "Format" is NOT valid here (Format is for 4_get_data only). "series" is valid for NAS and CPI only.
 
     Args:
         dataset: Dataset name - one of: PLFS, CPI, IIP, ASI, NAS, WPI, ENERGY
@@ -221,7 +221,7 @@ def get_metadata(
                         2=Quarterly bulletin (different indicator set).
                         3=Monthly bulletin (2025+ only).
                         MUST NOT use 2 for quarterly data. Use 1 + quarter_code in 4_get_data().
-        base_year: REQUIRED for CPI ("2024"/"2012"/"2010"), IIP ("2011-12"/"2004-05"/"1993-94"). MUST NOT pass for PLFS, ASI, WPI.
+        base_year: REQUIRED for CPI ("2024"/"2012"/"2010"), IIP ("2011-12"/"2004-05"/"1993-94"), NAS ("2011-12"). MUST NOT pass for PLFS, ASI, WPI.
         level: REQUIRED for CPI ("Group"/"Item"). MUST NOT pass for other datasets.
         frequency: REQUIRED for IIP ("Annually"/"Monthly"). MUST NOT pass for other datasets.
         classification_year: REQUIRED for ASI ("2008"/"2004"/"1998"/"1987"). MUST NOT pass for other datasets.
@@ -290,7 +290,7 @@ def get_metadata(
         elif dataset == "NAS":
             if indicator_code is None:
                 return {"error": "indicator_code is required for NAS"}
-            result = mospi.get_nas_filters(series=series or "Current", frequency_code=frequency_code or 1, indicator_code=indicator_code)
+            result = mospi.get_nas_filters(series=series or "Current", frequency_code=frequency_code or 1, indicator_code=indicator_code, base_year=base_year or "2011-12")
             result["api_params"] = get_swagger_param_definitions("NAS")
             result["_next_step"] = _next
             return result
@@ -335,6 +335,7 @@ def get_data(dataset: str, filters: Dict[str, str]) -> Dict[str, Any]:
         dataset: Dataset name (PLFS, CPI, IIP, ASI, NAS, WPI, ENERGY)
         filters: Key-value pairs using 'id' values from 3_get_metadata().
                  PLFS MUST include frequency_code (1=Annual, 2=Quarterly, 3=Monthly).
+                 NAS MUST include base_year (e.g., "2011-12").
                  Pass limit (e.g., "50", "100") if you expect more than 10 records.
     """
     dataset = dataset.upper()
@@ -452,7 +453,7 @@ def know_about_mospi_api() -> Dict[str, Any]:
             },
             "NAS": {
                 "name": "National Accounts Statistics",
-                "description": "22 annual + 11 quarterly indicators covering macroeconomic aggregates: GDP and GVA (production approach), consumption (private/government), capital formation (fixed, change in stock, valuables), trade (exports/imports), national income (GNI, disposable income), savings, and growth rates. Both Current and Back series available.",
+                "description": "22 annual + 11 quarterly indicators covering macroeconomic aggregates: GDP and GVA (production approach), consumption (private/government), capital formation (fixed, change in stock, valuables), trade (exports/imports), national income (GNI, disposable income), savings, and growth rates. Both Current and Back series available. Requires base_year (currently '2011-12').",
                 "use_for": "GDP, economic growth, national income, sectoral contribution, macro analysis"
             },
             "WPI": {
