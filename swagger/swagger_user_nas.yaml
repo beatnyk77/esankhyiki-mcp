@@ -16,6 +16,15 @@ paths:
       - National Accounts Statistics.
       operationId: NASIndicatorValues.
       parameters:
+      - name: base_year
+        required: true
+        in: query
+        description: Base year for constant price calculations
+        schema:
+          type: string
+          default: "2011-12"
+          enum:
+          - "2011-12"
       - name: series
         required: true
         in: query
