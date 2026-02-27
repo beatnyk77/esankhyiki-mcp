@@ -297,11 +297,13 @@ class MoSPI:
             # Add base_year info for consistency with CPI workflow
             if "data" in result and isinstance(result["data"], dict):
                 result["data"]["base_year"] = [
-                    {"base_year": "2011-12"}
+                    {"base_year": "2022-23"},
+                    {"base_year": "2011-12"},
                 ]
             result["_note"] = (
                 "NAS requires base_year in 3_get_metadata and 4_get_data. "
-                "Currently only base_year='2011-12' is available. "
+                "Available base years: '2022-23' (latest) and '2011-12'. "
+                "DEFAULT to '2022-23' for recent data unless user specifies otherwise. "
                 "Pass base_year along with series, frequency_code, and indicator_code."
             )
             return result
@@ -313,7 +315,7 @@ class MoSPI:
         series: str = "Current",
         frequency_code: int = 1,
         indicator_code: int = 1,
-        base_year: str = "2011-12"
+        base_year: str = "2022-23"
     ) -> Dict[str, Any]:
         """Fetch available NAS filters for given series/frequency/indicator.
 
@@ -321,7 +323,7 @@ class MoSPI:
             series: "Current" or "Back"
             frequency_code: 1 (Annually) or 2 (Quarterly, Current series only)
             indicator_code: Indicator code (1-22 for Annual, 1-11 for Quarterly)
-            base_year: Base year for constant price calculations (e.g. "2011-12")
+            base_year: Base year - "2022-23" (latest) or "2011-12"
         """
         params = {
             "base_year": base_year,
