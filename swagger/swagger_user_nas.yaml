@@ -22,8 +22,9 @@ paths:
         description: Base year for constant price calculations
         schema:
           type: string
-          default: "2011-12"
+          default: "2022-23"
           enum:
+          - "2022-23"
           - "2011-12"
       - name: series
         required: true
@@ -44,9 +45,10 @@ paths:
       - name: indicator_code
         required: true
         in: query
-        description: Enter the Indicator code (from 1 to 22. Comma separated for multiple values)
+        description: Enter the Indicator code (from 1 to 22, single value only)
         schema:
           type: string
+          pattern: ^\d+$
       - name: quarterly_code
         in: query
         description: Enter the Quarterly code (from 1 to 4. Comma separated for multiple values)
