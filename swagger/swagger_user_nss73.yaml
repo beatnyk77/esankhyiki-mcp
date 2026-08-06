@@ -6,7 +6,7 @@ servers:
 - url: https://api.mospi.gov.in/
 tags:
 - name: National Sample Survey (NSS 73rd Round)
-  description: UUnincorporated Non-Agricultural Enterprises in India (NSS 73rd Round)
+  description: Unincorporated Non-Agricultural Enterprises in India (NSS 73rd Round)
 paths:
   /api/nss-73/getNss73Records:
     get:
@@ -22,7 +22,7 @@ paths:
         in: query
         required: true
         schema:
-          type: integergit 
+          type: integer
           pattern: ^\d+$
         description: Indicator code (1-6)
       - name: sub_indicator_code
@@ -60,7 +60,7 @@ paths:
         schema:
           type: string
           pattern: ^\d+(,\d+)*$
-        description: description: Activity category code (1-48). Comma separated for multiple values.
+        description: Activity category code (1-48). Comma separated for multiple values.
       - name: hired_workers_code
         in: query
         schema:
@@ -72,7 +72,7 @@ paths:
         schema:
           type: string
           pattern: ^\d+(,\d+)*$
-        description: description: Enterprises by Ownership code (1=Proprietary male, 2=Proprietary female, 3=Proprietary All, 4=Partnership with members of same household, 5=Partnership with members of different households, 6=Self-help group, 7=Trust, 8=Others, 9=No Response, 10=All. Comma separated for multiple values)
+        description: Enterprises by Ownership code (1=Proprietary male, 2=Proprietary female, 3=Proprietary All, 4=Partnership with members of same household, 5=Partnership with members of different households, 6=Self-help group, 7=Trust, 8=Others, 9=No Response, 10=All. Comma separated for multiple values)
       - name: nature_of_employment_type_code
         in: query
         schema:
@@ -87,7 +87,7 @@ paths:
         description: Normal Working Hours in a Day (1=<4, 2=4-7, 3=8 or more hours, 4=N.R., 5=All. Comma separated for multiple values) 
       - name: limit
         in: query
-        schema:
+        schema: 
           type: integer
           default: 20
         description: Number of records per page (default 20)
