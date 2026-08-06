@@ -218,7 +218,7 @@ DATASETS = [
     pytest.param(
         "NSS73",
         {"indicator_code": 1},
-        {"indicator_code": "1", "limit": "1"},
+        {"indicator_code": "1", "limit": "20"},
         id="NSS73",
     ),
 ]
