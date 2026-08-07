@@ -1127,8 +1127,8 @@ def list_datasets() -> dict:
             },
             "NSS73": {
                 "name": "NSS73 (73rd Round - Unincorporated Non-Agricultural Enterprises in India)",
-                "description": "Indicators from NSS 73rd Round covering enterprise activity, sector, location, employment, and worker type breakdowns.",
-                "use_for": "Enterprise analysis, employment statistics, ownership patterns, and economic activity of the informal non-agricultural sector."
+                "description": "6 indicators from the NSS 73rd Round (2015-16) survey covering Unincorporated Non-Agricultural Enterprises in India, with statistics broken down by state/UT, sector (rural/urban), broad activity category (Manufacturing, Trade, Other services, Non-captive electricity), enterprise type (Own Account Enterprises vs Establishment), and — depending on the indicator — further dimensions such as detailed activity category, ownership type, gender, employment type, worker category, or normal working hours per day.",
+                "use_for": "Querying enterprise counts, ownership patterns, workforce composition (gender, employment type, worker category), hired-worker emoluments, and Gross Value Added (GVA) per worker or per enterprise across India's informal non-agricultural sector. Note: each indicator supports only a specific subset of filters (e.g., activity_category_code applies to indicator 1 only; enterprises_by_ownership_code applies to indicator 2 only; gva_per_worker_code applies to indicators 5-6 only) — combining filters across indicators returns no data, since the underlying survey tables were never cross-tabulated together."
             }
         },
         "workflow": [
