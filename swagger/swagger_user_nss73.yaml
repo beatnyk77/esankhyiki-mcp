@@ -6,7 +6,7 @@ servers:
 - url: https://api.mospi.gov.in/
 tags:
 - name: National Sample Survey (NSS 73rd Round)
-  description: UUnincorporated Non-Agricultural Enterprises in India (NSS 73rd Round)
+  description: Unincorporated Non-Agricultural Enterprises in India (NSS 73rd Round)
 paths:
   /api/nss-73/getNss73Records:
     get:
@@ -15,16 +15,33 @@ paths:
       operationId: NSS73IndicatorValues
       description: |
         - **Required:** `indicator_code` (must exist in indicator table)
-        - **Filters (optional):** sub_indicator_code, state_ut_code, sector_code, broad_activity_category_code, enterprise_type_code, activity_category_code, hired_workers_code
-
+        - **Filters (optional):** sub_indicator_code, state_ut_code, sector_code, broad_activity_category_code, enterprise_type_code, activity_category_code, hired_workers_code, enterprises_by_ownership_code, nature_of_employment_type_code, gva_per_worker_code
+        - `1` = Number of Enterprises → `activity_category_code`, `broad_activity_category_code`, `enterprise_type_code`
+        - `2` = Type of Ownership → `enterprises_by_ownership_code`, `broad_activity_category_code`, `enterprise_type_code`
+        - `3` = Workers → `gender_code`, `nature_of_employment_type_code`, `worker_codes_code`
+        - `4` = Emolument per hired worker → `sub_indicator_code`, `hired_workers_code`
+        - `5` = GVA per Worker → `gva_per_worker_code` (working hours)
+        - `6` = GVA per Enterprise → (no special sub-filter)
+        - **Note:** `activity_category_code` and `enterprises_by_ownership_code` are mutually exclusive — they come from separate NSS survey tables and were never cross-tabulated together.
+        - **Note:** `activity_category_code` is not a valid dimension for indicators `5` and `6` (GVA-based) at all — these are only broken down at the `broad_activity_category_code` level, not the fine-grained activity list.
       parameters:
       - name: indicator_code
         in: query
         required: true
         schema:
           type: integer
-          pattern: ^\d+$
-        description: Indicator code (1-6)
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+        description: >
+          Indicator code. 1=Number of Enterprises, 2=Type of Ownership,
+          3=Workers, 4=Emolument (in Rs.) per hired worker,
+          5=Gross Value Added (in Rs.) per Worker,
+          6=Gross Value Added (in Rs.) per Enterprise. 
       - name: sub_indicator_code
         in: query
         schema:
@@ -60,7 +77,11 @@ paths:
         schema:
           type: string
           pattern: ^\d+(,\d+)*$
-        description: Activity category code(1-48). (Comma separated for multiple values)
+        description: >
+          Activity category code (comma-separated values allowed).
+          Manufacturing: 1-25=Specific activities, 26=All Manufacturing.
+          Trade: 27-31=Specific activities, 32=All Trade.
+          Services: 33-47=Specific activities, 48=All Services.
       - name: hired_workers_code
         in: query
         schema:
@@ -72,42 +93,45 @@ paths:
         schema:
           type: string
           pattern: ^\d+(,\d+)*$
-        description: Enterprises by Ownership (1-10 Comma separated for multiple values) 
+        description: Enterprises by Ownership code 1=Proprietary male, 2=Proprietary female, 3=Proprietary All, 4=Partnership with members of same household, 5=Partnership with members of different households, 6=Self-help group, 7=Trust, 8=Others, 9=No Response, 10=All. Comma separated for multiple values
       - name: nature_of_employment_type_code
         in: query
         schema:
           type: string
           pattern: ^\d+(,\d+)*$
         description: Nature of Employment Type (1=Full time, 2=Part Time, 3=All. Comma separated for multiple values) 
-      - name: normal_working_hours_in_a_day
-        in: query
-        schema:
-          type: string
-          pattern: ^\d+(,\d+)*$
-        description: Normal Working Hours in a Day (1=<4, 2=4-7, 3=8≥, 4=N.R., 5=All. Comma separated for multiple values) 
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          default: 20
-        description: Number of records per page (default 20)
-      
       - name: gender_code
         in: query
         schema:
           type: integer
+        description: Gender code (1=Male, 2=Female, 3=Person. Comma separated for multiple values)
       - name: worker_codes_code
         in: query
         schema:
           type: integer
+        description: Worker Codes (1=Working owners, 2=Formal hired workers,3=Informal hired workers, 4=Helper/apprentice, 5=Other workers, 6=Total. Comma separated for multiple values)
       - name: gva_per_worker_code
+        in: query 
+        schema:
+          type: integer
+          enum: [1, 2, 3, 4, 5]
+        description: > 
+          Normal Working Hours in a Day. 1=<4, 2=4-7, 3=8 or more hours, 4=N.R., 5=All. 
+          Comma separated for multiple values 
+          (Note - DB column name is gva_per_worker_code but represents working-hours categories, not GVA.) 
+      - name: survey_code 
         in: query
         schema:
           type: integer
-      - name: survey_code
+          enum: [1]
+        description: >
+          Survey round. 1=NSS 73rd Round - Unincorporated Non-Agricultural Enterprises (Excluding Construction), 2015-16.
+      - name: limit
         in: query
-        schema:
+        schema: 
           type: integer
+          default: 20
+        description: Number of records per page (default 20)
       - name: page
         in: query
         schema:
@@ -179,11 +203,14 @@ paths:
                   statusCode:
                     type: boolean
                     example: false
+      security:
+      - bearerAuth: []
+
 components:
   securitySchemes:
     bearerAuth:
       type: apiKey
-      description: Bearer token to access these api endpoints
+      description: Bearer token to access the API
       name: Authorization
       in: header
 x-original-swagger-version: '2.0'
