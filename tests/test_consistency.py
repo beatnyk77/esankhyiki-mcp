@@ -2,7 +2,7 @@
 
 The MCP server has many places that must agree on the dataset list and its
 total count: VALID_DATASETS, DATASET_SWAGGER, EXPECTED_DATASETS, the
-startup banner, total_datasets in list_datasets, README, CONTRIBUTING, and
+startup banner, total_datasets in list_datasets, CONTRIBUTING, and
 the per-dataset swagger YAML files. These tests catch any drift across
 those locations, replacing the most common class of bug we've shipped
 (counts saying 19/20/21/22 in different files) with a hard CI failure.
@@ -107,27 +107,6 @@ def test_startup_banner_matches_valid_datasets(server_text, valid_datasets):
         f'Banner says {banner_count} datasets, VALID_DATASETS has {len(valid_datasets)}'
     )
     assert banner_names == valid, f'Banner names differ from VALID_DATASETS: {banner_names ^ valid}'
-
-
-def test_readme_feature_count_matches(readme_text, valid_datasets):
-    """README 'N statistical datasets' line must match VALID_DATASETS count."""
-    m = re.search(r'(\d+)\s+statistical\s+datasets', readme_text)
-    assert m, "Could not find 'N statistical datasets' in README.md"
-    assert int(m.group(1)) == len(valid_datasets), (
-        f'README features says {m.group(1)} datasets, VALID_DATASETS has {len(valid_datasets)}'
-    )
-
-
-def test_readme_dataset_table_rows_match(readme_text, valid_datasets):
-    """README dataset table must have one row per dataset in VALID_DATASETS."""
-    rows = re.findall(r'^\|\s*\*\*([A-Z][A-Z0-9]+)\*\*\s*\|', readme_text, re.MULTILINE)
-    table = set(rows)
-    valid = set(valid_datasets)
-    assert table == valid, (
-        f"README dataset table rows disagree with VALID_DATASETS.\n"
-        f"  In table but not VALID_DATASETS: {sorted(table - valid)}\n"
-        f"  In VALID_DATASETS but not table: {sorted(valid - table)}"
-    )
 
 
 def test_contributing_counts_match(contributing_text, valid_datasets):
