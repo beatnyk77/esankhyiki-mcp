@@ -119,7 +119,10 @@ If you want to connect your AI agent of choice with the MCP server, you can dire
 
 https://github.com/user-attachments/assets/ec23db03-c5ad-4bdd-af3a-9387bd906b3c
 
-https://github.com/user-attachments/assets/4d2adb2a-a350-4563-8408-c0790bb94412
+
+https://github.com/user-attachments/assets/675ccbd3-4c0e-4868-8f33-91992fd0f5bd
+
+
 
 To get more information, visit - https://www.datainnovation.mospi.gov.in/mospi-mcp
 
