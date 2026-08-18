@@ -117,10 +117,13 @@ list_datasets  ΓåÆ  get_indicators  ΓåÆ  get_metadata  ΓåÆ  get_data
 
 If you want to connect your AI agent of choice with the MCP server, you can directly connect it with MOSPI's MCP server. Video Guides to connect ChatGPT or Claude to MCP are available here - 
 
-https://github.com/user-attachments/assets/ec23db03-c5ad-4bdd-af3a-9387bd906b3c
+
+https://github.com/user-attachments/assets/a08376ca-8835-479f-9374-1cca63d5631c
 
 
-https://github.com/user-attachments/assets/675ccbd3-4c0e-4868-8f33-91992fd0f5bd
+
+https://github.com/user-attachments/assets/a2d65b8f-c938-43fa-856c-35088063f4bd
+
 
 
 
