@@ -108,5 +108,61 @@
     "indicator_code": 22,
     "name": "GDP Growth Rate",
     "description": "GDP Growth Rate"
+  },
+  {
+    "indicator_code": 23,
+    "name": "Gross State Domestic Product",
+    "description": "Gross State Domestic Product"
+  },
+  {
+    "indicator_code": 24,
+    "name": "Net State Domestic Product",
+    "description": "Net State Domestic Product"
+  },
+  {
+    "indicator_code": 25,
+    "name": "Per Capita Net State Domestic Product",
+    "description": "Per Capita Net State Domestic Product"
+  },
+  {
+    "indicator_code": 26,
+    "name": "GSDP Growth Rate",
+    "description": "Gross State Domestic Product Growth Rate"
+  },
+  {
+    "indicator_code": 27,
+    "name": "NSDP Growth Rate",
+    "description": "Net State Domestic Product Growth Rate"
+  },
+  {
+    "indicator_code": 28,
+    "name": "PCNSDP Growth Rate",
+    "description": "Per Capita Net State Domestic Product Growth Rate"
+  },
+  {
+    "indicator_code": 29, 
+    "name": "Gross State Value Added",
+    "description": "Gross State Value Added"
+  },
+  {
+    "indicator_code": 30,
+    "name": "Net State Value Added",
+    "description": "Net State Value Added"
+  },
+  {
+    "indicator_code": 31,
+    "name": "Per Capita GSDP (Rs.)",
+    "description": "Per Capita Gross State Domestic Product (Rs.)"
+  },
+  {
+    "indicator_code": 33,
+    "name": "Taxes on Products",
+    "description": "Taxes on Products"
+  },
+  {
+    "indicator_code": 34,
+    "name": "Subsidies on Products",  
+    "description": "Subsidies on Products"
   }
+  
 ]

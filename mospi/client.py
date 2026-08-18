@@ -408,7 +408,11 @@ class MoSPI:
         result["_note"] = (
             "NAS requires base_year in get_metadata and get_data. "
             "Available base years: '2022-23' (latest, Current series only) and '2011-12' (Current and Back series). "
-            "indicator_code accepts comma-separated values (1-22). "
+            "indicator_code accepts comma-separated values (1-34). "
+            "Codes 1-22 are national-level indicators (no state_code needed). "
+            "Codes 23-34 are state-level indicators and require state_code "
+            "(01-37, where 37 = All-India aggregate). "
+            "State-level indicators (23-34) are Annual-only — no Quarterly data exists for them. "
             "account_code (01-02) applies to indicators that expose account dimensions. "
             "get_data frequency_code: 'Annually' or 'Quarterly' (filter API uses 1=Annually, 2=Quarterly). "
             "Indicator list served from bundled definitions because getNasIndicatorList was unavailable."
@@ -434,7 +438,11 @@ class MoSPI:
             result["_note"] = (
                 "NAS requires base_year in get_metadata and get_data. "
                 "Available base years: '2022-23' (latest, Current series only) and '2011-12' (Current and Back series). "
-                "indicator_code accepts comma-separated values (1-22). "
+                "indicator_code accepts comma-separated values (1-34). "
+                "Codes 1-22 are national-level indicators (no state_code needed). "
+                "Codes 23-34 are state-level indicators and require state_code"
+                "(01-37, where 37 = All-India aggregate). "
+                "State-level indicators (23-34) are Annual-only — no Quarterly data exists for them. "
                 "account_code (01-02) applies to indicators that expose account dimensions. "
                 "get_data frequency_code: 'Annually' or 'Quarterly' (filter API uses 1=Annually, 2=Quarterly)."
             )
@@ -447,22 +455,34 @@ class MoSPI:
         series: str = "Current",
         frequency_code: int = 1,
         indicator_code: int = 1,
-        base_year: str = "2022-23"
+        base_year: str = "2022-23",
+        state_code: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Fetch available NAS filters for given series/frequency/indicator.
 
         Args:
             series: "Current" or "Back"
             frequency_code: 1 (Annually) or 2 (Quarterly, Current series only)
-            indicator_code: Indicator code (1-22 for Annual, 1-11 for Quarterly)
+            indicator_code: Indicator code.
+                - 1-22: national-level indicators. Available on Annual; only a
+                  subset (1, 2, 5, 9, 10, 11, 12, 13, 14, 15, 21, 22) have
+                  Quarterly data.
+                - 23-34: state-level indicators (GSDP, NSDP, GSVA, etc.).
+                  Annual frequency only — no Quarterly data exists.
+                  Requires state_code.
             base_year: Base year - "2022-23" (latest) or "2011-12"
-        """
+            state_code: State code (01-37, where 37 = All-India). Required when
+                indicator_code is 23-34. Comma separated for multiple values.
+                    Not applicable when frequency_code=2 (Quarterly).
+            """
         params = {
             "base_year": base_year,
             "series": series,
             "frequency_code": frequency_code,
             "indicator_code": indicator_code,
         }
+        if state_code:
+            params["state_code"] = state_code
 
         try:
             response = self.session.get(

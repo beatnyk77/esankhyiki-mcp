@@ -50,13 +50,20 @@ paths:
       - name: indicator_code
         required: true
         in: query
-        description: Enter the Indicator code
-        #  (from 1 to 22. Comma separated for multiple values)
+        description: |
+          Enter the Indicator code(s). Comma separated for multiple values.
+          - Codes 1–22: National-level indicators (e.g. GDP, GVA, PFCE) — no state_code needed. Comma separated for multiple values
+          - Codes 23–34: State-level indicators (e.g. GSDP, NSDP, GSVA) — requires state_code. Comma separated for multiple values
         schema:
-          type: string
+          type: string  
       - name: quarterly_code
         in: query
         description: Enter the Quarterly code (from 1 to 4. Comma separated for multiple values)
+        schema:
+          type: string
+      - name: state_code
+        in: query
+        description: Enter the State code (from 01 to 37. Comma separated for multiple values)
         schema:
           type: string
       - name: year

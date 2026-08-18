@@ -398,6 +398,7 @@ def get_metadata(
     sub_indicator_code: Optional[int] = None,
     survey_code: Optional[int] = None,
     module: Optional[str] = None,
+    state_code: Optional[str] = None,
     Format: Optional[str] = None,
     type: Optional[str] = None
 ) -> dict:
@@ -420,6 +421,11 @@ def get_metadata(
                         NFHS, ENVSTATS, RBI, NSS77, NSS78, NSS76, NSS75E, NSS79, CPIALRL, HCES, TUS, EC, UDISE, MNRE, NSS80, NSS73.
                         Not applicable for: CPI, IIP, ISP, ASI, WPI.
                         For RBI, this maps to sub_indicator_code internally.
+        state_code: For NAS only — required when indicator_code is 23-34
+                    (state-level GSDP/NSDP/GSVA family). Values 01-37, where
+                    37 = All-India aggregate. Comma separated for multiple
+                    states. Not applicable when frequency_code=2 (Quarterly) —
+                    state-level indicators have Annual data only.
         frequency_code: Required for PLFS and ASUSE.
                         PLFS: 1=Annual, 2=Quarterly bulletin, 3=Monthly.
                         ASUSE: 1=Annual, 2=Quarterly.
@@ -555,17 +561,18 @@ def get_metadata(
         elif dataset == "NAS":
             if indicator_code is None:
                 return {"error": "indicator_code is required for NAS"}
-            result = mospi.get_nas_filters(series=series or "Current", frequency_code=frequency_code or 1, indicator_code=indicator_code, base_year=base_year or "2022-23")
+            result = mospi.get_nas_filters(series=series or "Current", frequency_code=frequency_code or 1, indicator_code=indicator_code, base_year=base_year or "2022-23", state_code=state_code)
             result["api_params"] = get_swagger_param_definitions("NAS")
             result["parameter_notes"] = (
                 "base_year='2011-12' supports series Current and Back; base_year='2022-23' supports Current only. "
-                "indicator_code accepts comma-separated values in get_data (1-22). "
+                "indicator_code accepts comma-separated values in get_data (1-34). "
+                "Codes 1-22 are national-level; 23-34 are state-level and require state_code. "
                 "New filter: account_code (01-02) for applicable indicators. "
                 "Filter metadata API uses frequency_code 1=Annually, 2=Quarterly; "
                 "get_data accepts 'Annually'/'Quarterly' (or 1/2)."
             )
             result["next_step"] = _next
-            return _check_empty_metadata(result, dataset, indicator_code=indicator_code, base_year=base_year, frequency_code=frequency_code)
+            return _check_empty_metadata(result, dataset, indicator_code=indicator_code, base_year=base_year, frequency_code=frequency_code, state_code=state_code)
 
         elif dataset == "ENERGY":
             ind_code = indicator_code or 1
@@ -949,7 +956,7 @@ def get_data(dataset: str, filters: Dict[str, Any]) -> dict:
             f"with filters: {filter_str}. "
             "Common causes: 1) indicator_code or other numeric codes are out of range. "
             "2) Non-integer values like '1.0', 'abc', or empty strings in numeric fields. "
-            "3) Comma-separated values where only single values are accepted (e.g. NAS indicator_code)."
+            "3) Comma-separated values where only single values are accepted (e.g. PLFS indicator_code)."
         )
         result["suggestion"] = f"Call get_indicators(dataset='{dataset}') to check valid codes, then get_metadata() for filter values."
 
@@ -1022,7 +1029,7 @@ def list_datasets() -> dict:
             },
             "NAS": {
                 "name": "National Accounts Statistics",
-                "description": "22 annual + 11 quarterly indicators covering macroeconomic aggregates: GDP and GVA (production approach), consumption (private/government), capital formation (fixed, change in stock, valuables), trade (exports/imports), national income (GNI, disposable income), savings, and growth rates. base_year='2011-12' supports Current and Back series; base_year='2022-23' supports Current only. indicator_code accepts comma-separated values. account_code (01-02) filter added for applicable indicators.",
+                "description": "22 national annual/quarterly indicators (GDP, GVA, consumption, capital formation, trade, national income, savings, growth rates) plus 12 state-level indicators (23-34: GSDP, NSDP, GSVA, Per Capita NSDP/GSDP, Taxes/Subsidies on Products, and their growth rates) requiring state_code. base_year='2011-12' supports Current and Back series; base_year='2022-23' supports Current only. indicator_code accepts comma-separated values. account_code (01-02) filter added for applicable indicators. State-level indicators (23-34) are Annual-only.",
                 "use_for": "GDP, economic growth, national income, sectoral contribution, macro analysis"
             },
             "WPI": {
